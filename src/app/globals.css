@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --fond: 255 255 255;
+  --surface: 243 249 245;
+  --encre: 14 42 30;
+  --doux: 92 114 104;
+  --trait: 220 237 227;
+  --accent: 10 122 79;
+  --accent-hover: 7 92 59;
+  --accent-texte: 255 255 255;
+  --succes: 63 174 116;
+  --alerte: 183 121 31;
+  --erreur: 179 38 30;
+  color-scheme: light;
+}
+
+.dark {
+  --fond: 11 31 22;
+  --surface: 17 42 31;
+  --encre: 245 251 247;
+  --doux: 157 181 169;
+  --trait: 31 62 48;
+  --accent: 47 191 126;
+  --accent-hover: 82 212 152;
+  --accent-texte: 11 31 22;
+  --succes: 63 174 116;
+  --alerte: 224 164 69;
+  --erreur: 240 104 94;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-fond text-encre antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+  ::selection {
+    @apply bg-accent/20;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer utilities {
+  .chiffres {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ---------- Impression du reçu (ticket 80 mm) ---------- */
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #recu,
+  #recu * {
+    visibility: visible;
+  }
+  #recu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm;
+    padding: 4mm 4mm 8mm;
+    color: #000 !important;
+    background: #fff !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

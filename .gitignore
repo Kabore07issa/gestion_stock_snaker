@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.env
+.env.local
+# Données de la boutique (base + photos) : ne jamais les publier
+data/*
+!data/.gitkeep
+npm-debug.log*
+.DS_Store

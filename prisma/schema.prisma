@@ -1,0 +1,135 @@
+// Schéma de la base de données de la boutique.
+// Base SQLite : un seul fichier (data/boutique.db), facile à sauvegarder.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// Compte unique du gérant de la boutique.
+model Utilisateur {
+  id           Int      @id @default(autoincrement())
+  identifiant  String   @unique
+  motDePasse   String // hash bcrypt
+  createdAt    DateTime @default(now())
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  nom       String
+  prenom    String
+  telephone String
+  pointure  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ventes  Vente[]
+  credits Credit[]
+
+  @@index([nom])
+  @@index([telephone])
+}
+
+model Article {
+  id        Int      @id @default(autoincrement())
+  modele    String
+  marque    String
+  pointure  String
+  couleur   String
+  prixAchat Int // FCFA
+  prixVente Int // FCFA
+  quantite  Int      @default(0)
+  photo     String? // nom du fichier dans data/uploads
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mouvements MouvementStock[]
+  lignes     LigneVente[]
+
+  @@index([marque])
+  @@index([pointure])
+}
+
+/// Historique des entrées / sorties de stock.
+/// type : ARRIVAGE | AJUSTEMENT | VENTE | ANNULATION
+model MouvementStock {
+  id        Int      @id @default(autoincrement())
+  articleId Int
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  type      String
+  quantite  Int // positif = entrée, négatif = sortie
+  motif     String?
+  venteId   Int?
+  createdAt DateTime @default(now())
+
+  @@index([articleId])
+}
+
+/// modePaiement : ESPECES | WAVE | MOBILE_MONEY | CREDIT
+model Vente {
+  id           Int       @id @default(autoincrement())
+  date         DateTime  @default(now())
+  clientId     Int?
+  client       Client?   @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  sousTotal    Int
+  remise       Int       @default(0)
+  total        Int
+  modePaiement String
+  operateur    String? // Orange Money, MTN MoMo, Moov Money
+  reference    String? // numéro de transaction
+  montantRecu  Int? // espèces
+  monnaie      Int? // espèces
+  annulee      Boolean   @default(false)
+  annuleeLe    DateTime?
+
+  lignes LigneVente[]
+  credit Credit?
+
+  @@index([date])
+}
+
+model LigneVente {
+  id           Int     @id @default(autoincrement())
+  venteId      Int
+  vente        Vente   @relation(fields: [venteId], references: [id], onDelete: Cascade)
+  articleId    Int?
+  article      Article? @relation(fields: [articleId], references: [id], onDelete: SetNull)
+  libelle      String // copie du nom de l'article au moment de la vente
+  prixUnitaire Int
+  prixAchat    Int
+  quantite     Int
+}
+
+model Credit {
+  id           Int      @id @default(autoincrement())
+  venteId      Int      @unique
+  vente        Vente    @relation(fields: [venteId], references: [id], onDelete: Cascade)
+  clientId     Int
+  client       Client   @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  montantTotal Int
+  dateRappel   String // AAAA-MM-JJ
+  createdAt    DateTime @default(now())
+
+  versements Versement[]
+
+  @@index([dateRappel])
+}
+
+/// mode : ESPECES | WAVE | MOBILE_MONEY
+model Versement {
+  id        Int      @id @default(autoincrement())
+  creditId  Int
+  credit    Credit   @relation(fields: [creditId], references: [id], onDelete: Cascade)
+  montant   Int
+  mode      String
+  operateur String?
+  reference String?
+  estAvance Boolean  @default(false)
+  date      DateTime @default(now())
+
+  @@index([creditId])
+}
