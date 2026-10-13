@@ -11,7 +11,18 @@ et sauvegarde de la base. Installable sur téléphone (PWA), utilisable sur ordi
 
 ---
 
-## 1. Installation
+## Démarrage le plus simple (Windows)
+
+1. Installez **Node.js** (version « LTS ») depuis https://nodejs.org — suivant, suivant, terminer.
+2. Téléchargez le projet : sur GitHub, bouton vert **Code → Download ZIP**, puis décompressez le dossier.
+3. Double-cliquez sur **`Lancer la boutique.bat`**.
+   La première fois, l'installation prend quelques minutes. Le navigateur s'ouvre ensuite sur
+   http://localhost:3000 où vous créez votre compte.
+4. Gardez la fenêtre noire ouverte pendant que vous utilisez l'application. Pour arrêter : fermez-la.
+
+Pour charger les données de démonstration : ouvrez un terminal dans le dossier et tapez `npm run db:seed`.
+
+## 1. Installation (manuelle)
 
 Prérequis : **Node.js 20 ou plus récent** (https://nodejs.org).
 
